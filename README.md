@@ -87,6 +87,10 @@ classDiagram
     FinePolicy <|.. DailyFinePolicy
     FinePolicy <|.. FixedFinePolicy
 
+    BookRepository --> Book : manages
+    MemberRepository --> Member : manages
+    LoanRepository --> Loan : manages
+
     Loan "0..*" --> "1" Book
     Loan "0..*" --> "1" Member
 ```
@@ -99,7 +103,7 @@ classDiagram
 | **OCP** (Open/Closed) | `FinePolicy` là abstraction; `DailyFinePolicy` và `FixedFinePolicy` là các chiến lược. Khi thêm cách tính phí, tạo implementation mới mà không phải sửa logic tính phí trong `LoanServiceImpl`. Có thể cần bổ sung loại mới vào `FinePolicyType`. |
 | **LSP** (Liskov Substitution) | `DailyFinePolicy` và `FixedFinePolicy` đều có thể được sử dụng qua interface `FinePolicy`. |
 | **ISP** (Interface Segregation) | `FinePolicy` chỉ khai báo các phương thức cần cho việc xác định loại và tính phí. |
-| **DIP** (Dependency Inversion) | `LoanServiceImpl` phụ thuộc vào `BookRepository`, `MemberRepository`, `LoanRepository` và `FinePolicyFactory` thông qua constructor injection, không tự tạo kết nối JDBC hay phụ thuộc vào class lưu trữ cụ thể. Spring Data JPA cung cấp implementation cho các repository interface. |
+| **DIP** (Dependency Inversion) | `LoanServiceImpl` phụ thuộc vào các abstraction `BookRepository`, `MemberRepository`, `LoanRepository` thay vì class truy cập dữ liệu cụ thể. Spring Data JPA cung cấp implementation cho các repository interface. `FinePolicyFactory` hiện là class cụ thể được inject, nên không phải mọi dependency của Service đều tuân theo DIP ở cùng mức độ. |
 
 ### OCP — Mở rộng chính sách phí phạt
 
@@ -124,4 +128,4 @@ public class LoanServiceImpl implements LoanService {
 }
 ```
 
-Service thao tác qua các interface Repository; việc truy cập PostgreSQL được Spring Data JPA/Hibernate đảm nhiệm.
+Service thao tác qua các interface Repository; Spring Data JPA/Hibernate đảm nhiệm việc truy cập PostgreSQL. `FinePolicyFactory` được inject qua constructor nhưng vẫn là một dependency vào class cụ thể; constructor injection tự nó không đồng nghĩa với DIP.
