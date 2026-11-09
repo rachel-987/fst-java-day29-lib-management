@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: lib-management
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/library_db
+    username: app
+    password: app123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
